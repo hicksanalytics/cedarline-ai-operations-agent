@@ -1,0 +1,7 @@
+job_id,branch_id,service_type,status,revenue,labor_cost,material_cost
+J101,North,repair,completed,1200,200,100
+J102,East,repair,completed,400,250,50
+J103,East,installation,completed,6900,1700,2700
+J104,South,repair,canceled,900,0,0
+J105,North,maintenance,completed,650,,100
+J106,South,installation,scheduled,8000,1800,3100
