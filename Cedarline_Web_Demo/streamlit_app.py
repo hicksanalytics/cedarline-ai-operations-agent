@@ -65,8 +65,13 @@ with analysis:
                 with st.spinner('Querying business tools…'):
                     answer,trace=run_agent(question,branch,report_date.isoformat(),request)
                 st.session_state['result']=(question,branch,report_date.isoformat(),answer,trace)
-            except Exception:
-                st.error('The analyst could not complete a verified response. Check the evidence tab or try again later.')
+            except Exception as error:
+                status=getattr(error,'status_code',None)
+                reasons={400:'The provider rejected the model request.',401:'The provider rejected the API key.',403:'The key or project lacks access to this model.',404:'The configured model or endpoint was not found.',429:'The provider quota or rate limit was reached.'}
+                detail=reasons.get(status,'The response could not be verified. Please try again later.')
+                if isinstance(error,RuntimeError) and str(error) in ['No verified answer: tools were not successfully completed.','Model returned an empty answer.','Tool-call limit reached.','Model request limit reached.']:detail=str(error)
+                st.error('The analyst could not complete a verified response. '+detail)
+                if isinstance(status,int):st.caption(f'Provider HTTP status: {status}')
     if 'result' in st.session_state:
         q,b,d,a,t=st.session_state['result']
         st.caption(f'Last answer • profitability branch {b} • report date {d}')
